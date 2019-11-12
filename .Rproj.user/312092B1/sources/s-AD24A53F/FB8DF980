@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1573592007202.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "FB8DF980",
+    "lastKnownWriteTime" : 1573595915,
+    "last_content_update" : 1573595915784,
+    "path" : "~/Desktop/kjlee/R/package-kjlee.R",
+    "project_path" : "R/package-kjlee.R",
+    "properties" : {
+        "cursorPosition" : "7,39",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
