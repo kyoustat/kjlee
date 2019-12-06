@@ -624,7 +624,8 @@ gen.2013CLX.dense <- function(n, p, no.cov=1, rho){
   # 2. generate samples accordingly
   output = list()
   #   2-1. Let's adjust for the signal strength by Kyoungjae's method
-  vvec = rep(sqrt(log(n)/(n*p)), p)
+  vvec = rnorm(p)
+  vvec = vvec/sqrt(sum(vvec^2))
   sig1 = thesig
   sig2 = thesig + outer(vvec,vvec)*rho
   #   2-2. generate data for H0
