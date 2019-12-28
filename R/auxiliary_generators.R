@@ -641,3 +641,95 @@ gen.2013CLX.dense <- function(n, p, no.cov=1, rho){
   output$H1 = tmpH1
   return(output)
 }
+#' @keywords internal
+#' @noRd
+gen.2013CLX.dense.ones <- function(n, p, no.cov=1, rho){
+  # rho : non-zero signal strength
+
+  # covariance modeling 1
+  scenario.2013CLX.cov1 <- function(p){
+    Dhalf = diag(sqrt(runif(p, min=0.5, max=2.5)))
+    SStar = array(0,c(p,p))
+    for (k in 1:floor(p/5)){
+      lowk = 5*(k-1)+1
+      uppk = 5*k
+      for (i in lowk:uppk){
+        for (j in lowk:uppk){
+          SStar[i,j] = 0.5
+        }
+      }
+    }
+    diag(SStar) = 1.0
+    mSig = Dhalf%*%SStar%*%Dhalf
+
+
+
+    return(mSig)
+  }
+  scenario.2013CLX.cov2 <- function(p){
+    Dhalf = diag(sqrt(runif(p, min=0.5, max=2.5)))
+    sstar = array(0,c(p,p))
+    for (i in 1:p){
+      for (j in 1:p){
+        sstar[i,j] = (0.5^abs(i-j))
+      }
+    }
+    msig = Dhalf%*%sstar%*%Dhalf
+    return(msig)
+  }
+  scenario.2013CLX.cov3 <- function(p){
+    Dhalf = diag(sqrt(runif(p, min=0.5, max=2.5)))
+    sstar = array(0,c(p,p))
+    for (i in 1:(p-1)){
+      for (j in (i+1):p){
+        theval = ifelse(rbinom(1, 1, 0.05) > 0.5, 0.5, 0)
+        sstar[i,j] = theval
+        sstar[j,i] = theval
+      }
+    }
+    diag(sstar) = 1
+
+    del  = abs(min(eigen(sstar)$values))+0.05
+    ssig = (Dhalf%*%(sstar+del*diag(p))%*%Dhalf)/(1+del)
+    return(ssig)
+  }
+  scenario.2013CLX.cov4 <- function(p){
+    omat = diag(runif(p, min=1, max=5))
+    tmat = array(0,c(p,p))
+    for (i in 1:p){
+      for (j in 1:p){
+        tmat[i,j] = ((-1)^(i+j))*(0.4^((abs(i-j))^0.1))
+      }
+    }
+    ssig = omat%*%tmat%*%omat
+    return(ssig)
+  }
+  # 1. generate common covariance
+  no.cov = as.integer(no.cov)
+  if (!(no.cov %in% 1:4)){
+    stop("* scenario.2013CLX : 'no.cov' is from 1 to 4.")
+  }
+  thesig = switch(no.cov,
+                  "1" = scenario.2013CLX.cov1(p),
+                  "2" = scenario.2013CLX.cov2(p),
+                  "3" = scenario.2013CLX.cov3(p),
+                  "4" = scenario.2013CLX.cov4(p))
+  # 2. generate samples accordingly
+  output = list()
+  #   2-1. Let's adjust for the signal strength by Kyoungjae's method
+  vvec = rep(1,p)
+  sig1 = thesig
+  sig2 = thesig + outer(vvec,vvec)*rho
+  #   2-2. generate data for H0
+  tmpH0 = list()
+  tmpH0$X = mvtnorm::rmvnorm(n, mean=rep(0,p), sigma=sig1)
+  tmpH0$Y = mvtnorm::rmvnorm(n, mean=rep(0,p), sigma=sig1)
+  #   2-3. generate data for H1
+  tmpH1 = list()
+  tmpH1$X = mvtnorm::rmvnorm(n, mean=rep(0,p), sigma=sig1)
+  tmpH1$Y = mvtnorm::rmvnorm(n, mean=rep(0,p), sigma=sig2)
+  #   2-4. wrap-up and return
+  output$H0 = tmpH0
+  output$H1 = tmpH1
+  return(output)
+}

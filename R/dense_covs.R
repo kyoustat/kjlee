@@ -10,7 +10,8 @@
 #'  out = dense_covs(p=5, n=25, mreplicate=100, covid=1)
 #'
 #' @export
-dense_covs <- function(p, n, mreplicate, covid, rhos=c(seq(0.01, 2, length.out=20), seq(2.2, 5, length.out=10))){
+dense_covs <- function(p, n, mreplicate, covid, rhos=c(seq(0.01, 2, length.out=20), seq(2.2, 5, length.out=10)),
+                       normalize=FALSE){
   ## parameters
   myn    = round(n)
   myp    = round(p)
@@ -30,7 +31,12 @@ dense_covs <- function(p, n, mreplicate, covid, rhos=c(seq(0.01, 2, length.out=2
     dat.H1 = list()
 
     for (k in 1:mreplicate){
-      gen.mine = gen.2013CLX.dense(myn, myp, no.cov=covid, rho=tgtrho)
+      if (!isTRUE(normalize)){
+        gen.mine = gen.2013CLX.dense(myn, myp, no.cov=covid, rho=tgtrho)
+      } else if (isTRUE(normalize)){
+        gen.mine = gen.2013CLX.dense.ones(myn,myp, no.cov=covid, rho=tgtrho)
+      }
+
       dat.H0[[k]] = gen.mine$H0
       dat.H1[[k]] = gen.mine$H1
     }
