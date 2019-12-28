@@ -31,9 +31,9 @@ dense_covs <- function(p, n, mreplicate, covid, rhos=c(seq(0.01, 2, length.out=2
     dat.H1 = list()
 
     for (k in 1:mreplicate){
-      if (!isTRUE(normalize)){
+      if (normalize){ # norm 1
         gen.mine = gen.2013CLX.dense(myn, myp, no.cov=covid, rho=tgtrho)
-      } else if (isTRUE(normalize)){
+      } else {
         gen.mine = gen.2013CLX.dense.ones(myn,myp, no.cov=covid, rho=tgtrho)
       }
 
